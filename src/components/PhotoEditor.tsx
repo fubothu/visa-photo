@@ -10,9 +10,10 @@ interface PhotoEditorProps {
     imageSrc: string;
     fileName: string;
     onCancel: () => void;
+    fileHandle?: any;
 }
 
-export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, onCancel }) => {
+export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, onCancel, fileHandle }) => {
     const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
     const [zoom, setZoom] = useState(1);
     const [rotation, setRotation] = useState(0);
@@ -34,6 +35,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
             if (window.showSaveFilePicker) {
                 // @ts-ignore
                 const handle = await window.showSaveFilePicker({
+                    startIn: fileHandle, // Open in the same directory if possible
                     suggestedName: newFileName,
                     types: [{
                         description: 'JPEG Image',

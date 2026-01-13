@@ -3,20 +3,24 @@ import { PhotoUploader } from './components/PhotoUploader';
 import { PhotoEditor } from './components/PhotoEditor';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { Footer } from './components/Footer';
 
 function AppContent() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
+  const [fileHandle, setFileHandle] = useState<any>(null);
   const { t } = useLanguage();
 
-  const handleFileSelect = (src: string, name: string) => {
+  const handleFileSelect = (src: string, name: string, handle?: any) => {
     setImageSrc(src);
     setFileName(name);
+    setFileHandle(handle);
   };
 
   const handleCancel = () => {
     setImageSrc(null);
     setFileName('');
+    setFileHandle(null);
   };
 
   return (
@@ -37,9 +41,15 @@ function AppContent() {
             <PhotoUploader onFileSelect={handleFileSelect} />
           </div>
         ) : (
-          <PhotoEditor imageSrc={imageSrc} fileName={fileName} onCancel={handleCancel} />
+          <PhotoEditor
+            imageSrc={imageSrc}
+            fileName={fileName}
+            onCancel={handleCancel}
+            fileHandle={fileHandle}
+          />
         )}
       </main>
+      <Footer />
     </div>
   );
 }

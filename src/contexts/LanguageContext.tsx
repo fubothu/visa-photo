@@ -19,6 +19,8 @@ interface Translations {
     downloadPrintSheet: string;
     hint: string;
     headContour: string;
+    disclaimer: string;
+    privacy: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -38,6 +40,8 @@ const translations: Record<Language, Translations> = {
         downloadPrintSheet: 'Download 4x6" Printable (6 Photos)',
         hint: 'Double tap / Pinch to Zoom on Trackpad supported.',
         headContour: 'Fit Head Here',
+        disclaimer: 'Disclaimer: This tool is not affiliated with the U.S. Department of State. The photos generated are for reference only and do not guarantee acceptance. Please verify with official requirements before submission.',
+        privacy: 'Privacy: We do not store any uploaded photos or log user activity.',
     },
     zh: {
         title: '美国签证照片制作',
@@ -55,6 +59,8 @@ const translations: Record<Language, Translations> = {
         downloadPrintSheet: '下载 4x6" 排版 (6张)',
         hint: '支持触控板双指捏合缩放。',
         headContour: '将头部对齐此处',
+        disclaimer: '免责声明：本工具与美国国务院无关。生成的照片仅供参考，不保证一定被接受。提交前请务必仔细核对官方要求。',
+        privacy: '隐私声明：本网站不存储任何用户上传的照片，也不会记录用户的任何活动。',
     },
 };
 

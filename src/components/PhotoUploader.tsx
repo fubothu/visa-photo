@@ -3,7 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import './PhotoUploader.css';
 
 interface PhotoUploaderProps {
-    onFileSelect: (imageDataUrl: string, fileName: string) => void;
+    onFileSelect: (imageDataUrl: string, fileName: string, fileHandle?: any) => void;
 }
 
 const MIN_DIMENSION = 600;
@@ -13,7 +13,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onFileSelect }) =>
     const [isDragging, setIsDragging] = useState(false);
     const { t } = useLanguage();
 
-    const processFile = useCallback((file: File) => {
+    const processFile = useCallback((file: File, handle?: any) => {
         setError(null);
 
         if (!['image/jpeg', 'image/png'].includes(file.type)) {
@@ -31,7 +31,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onFileSelect }) =>
                 if (img.width < MIN_DIMENSION || img.height < MIN_DIMENSION) {
                     setError(t.errorSize(img.width, img.height));
                 } else {
-                    onFileSelect(result, file.name);
+                    onFileSelect(result, file.name, handle);
                 }
             };
             img.onerror = () => {
@@ -66,6 +66,32 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onFileSelect }) =>
         }
     };
 
+    const handleSelectClick = async (e: React.MouseEvent) => {
+        // @ts-ignore
+        if (window.showOpenFilePicker) {
+            e.preventDefault();
+            try {
+                // @ts-ignore
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Images',
+                        accept: { 'image/*': ['.png', '.jpeg', '.jpg'] }
+                    }],
+                    multiple: false
+                });
+                const file = await handle.getFile();
+                processFile(file, handle);
+            } catch (err: any) {
+                if (err.name !== 'AbortError') {
+                    console.error('File Picker failed', err);
+                    // Fallback to default input
+                    document.getElementById('fileInput')?.click();
+                }
+            }
+        }
+        // If API not supported, label's default behavior handles the click on input
+    };
+
     return (
         <div
             className={`uploader-container ${isDragging ? 'dragging' : ''}`}
@@ -85,7 +111,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ onFileSelect }) =>
                     onChange={handleFileChange}
                     className="hidden-input"
                 />
-                <label htmlFor="fileInput" className="btn btn-primary upload-btn">
+                <label htmlFor="fileInput" className="btn btn-primary upload-btn" onClick={handleSelectClick}>
                     {t.selectFile}
                 </label>
 
