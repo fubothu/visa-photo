@@ -2,6 +2,7 @@
   "name": "visa-photo",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://fubothu.github.io/visa-photo/",
   "type": "module",
   "scripts": {
     "dev": "vite",
