@@ -19,7 +19,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const { t } = useLanguage();
 
-    const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
