@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, checkFeedbackEnabled, isConfigured as checkIsConfigured } from '../services/firebase';
-import { useLanguage } from '../contexts/LanguageContext';
+
 
 export const FeedbackForm: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
