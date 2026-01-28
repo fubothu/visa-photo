@@ -84,20 +84,26 @@ export default async function getCroppedImg(
     return canvas.toDataURL('image/jpeg', 0.95);
 }
 
+import type { VisaRequirement } from './visaRequirements';
+
 /**
- * Generates a 6x4 inch tiled image (3x2 grid of 2x2 inch photos).
- * Assuming input photo is correctly squared.
+ * Generates a 6x4 inch tiled image (3x2 grid of 2x2 inch photos for US).
+ * Adapted for other sizes to fit as many as possible.
  * Output: 1800x1200 px (at 300dpi)
  */
-export async function generateTiledImage(singlePhotoDataUrl: string): Promise<string> {
+export async function generateTiledImage(singlePhotoDataUrl: string, requirement: VisaRequirement): Promise<string> {
     const image = await createImage(singlePhotoDataUrl);
 
     // Canvas size for 6x4 inch @ 300dpi
     // Width: 6 inch * 300 = 1800 px
     // Height: 4 inch * 300 = 1200 px
+    // We assume landscape orientation for the paper itself
+    const canvasWidth = 1800;
+    const canvasHeight = 1200;
+
     const canvas = document.createElement('canvas');
-    canvas.width = 1800;
-    canvas.height = 1200;
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
@@ -108,29 +114,40 @@ export async function generateTiledImage(singlePhotoDataUrl: string): Promise<st
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Each photo is 2x2 inch = 600x600 px
-    // We want a 3x2 grid.
-    // 600 * 3 = 1800 (Fits perfectly width)
-    // 600 * 2 = 1200 (Fits perfectly height)
+    // Calculate photo size in pixels (300 dpi)
+    // 1 inch = 25.4 mm
+    // px = (mm / 25.4) * 300
+    const ppm = 300 / 25.4; // pixels per mm
+    const photoWidthPx = Math.round(requirement.widthMm * ppm);
+    const photoHeightPx = Math.round(requirement.heightMm * ppm);
 
-    const photoSize = 600;
+    // Simple tiling logic: maximize fit
+    // Try normal orientation
+    const cols = Math.floor(canvasWidth / photoWidthPx);
+    const rows = Math.floor(canvasHeight / photoHeightPx);
 
-    // Draw 6 photos
-    for (let r = 0; r < 2; r++) {
-        for (let c = 0; c < 3; c++) {
-            const x = c * photoSize;
-            const y = r * photoSize;
+    // Calculate margins to center the grid
+    const totalGridWidth = cols * photoWidthPx;
+    const totalGridHeight = rows * photoHeightPx;
+    const startX = (canvasWidth - totalGridWidth) / 2;
+    const startY = (canvasHeight - totalGridHeight) / 2;
+
+    // Draw photos
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const x = startX + c * photoWidthPx;
+            const y = startY + r * photoHeightPx;
 
             // Draw image
-            ctx.drawImage(image, x, y, photoSize, photoSize);
+            ctx.drawImage(image, x, y, photoWidthPx, photoHeightPx);
 
-            // Optional: Draw light cut lines or border?
-            // Since background is white and photos usually white, helpful to have a very light border
+            // Draw light cut lines/border
             ctx.strokeStyle = '#e2e8f0'; // slate-200
             ctx.lineWidth = 1;
-            ctx.strokeRect(x, y, photoSize, photoSize);
+            ctx.strokeRect(x, y, photoWidthPx, photoHeightPx);
         }
     }
 
     return canvas.toDataURL('image/jpeg', 0.95);
 }
+

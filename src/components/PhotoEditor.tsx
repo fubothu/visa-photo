@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Cropper from 'react-easy-crop';
 import type { Point, Area } from 'react-easy-crop';
 import { GuideOverlay } from './GuideOverlay';
 import getCroppedImg, { generateTiledImage } from '../utils/canvasUtils';
 import { useLanguage } from '../contexts/LanguageContext';
+import { VISA_REQUIREMENTS } from '../utils/visaRequirements';
 import './PhotoEditor.css';
 
 interface PhotoEditorProps {
@@ -19,6 +20,14 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
     const [rotation, setRotation] = useState(0);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const { t } = useLanguage();
+
+    // Default to US
+    const [selectedCountry, setSelectedCountry] = useState<string>('US');
+
+    // Get current requirement config
+    const currentRequirement = useMemo(() => {
+        return VISA_REQUIREMENTS[selectedCountry] || VISA_REQUIREMENTS['US'];
+    }, [selectedCountry]);
 
     const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
@@ -67,7 +76,7 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
         if (!croppedAreaPixels) return;
         try {
             const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-            await saveFile(croppedImage, 'visa-photo');
+            await saveFile(croppedImage, `visa-photo-${selectedCountry}`);
         } catch (e) {
             console.error(e);
             alert('Failed to crop image');
@@ -79,10 +88,10 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
         try {
             // 1. Get single cropped image first
             const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels, rotation);
-            // 2. Generate tiled sheet
-            const tiledImage = await generateTiledImage(croppedImage);
+            // 2. Generate tiled sheet using the current requirement
+            const tiledImage = await generateTiledImage(croppedImage, currentRequirement);
             // 3. Save
-            await saveFile(tiledImage, 'visa-photo-6x4-print');
+            await saveFile(tiledImage, `visa-print-sheet-${selectedCountry}`);
         } catch (e) {
             console.error(e);
             alert('Failed to generate print sheet');
@@ -107,19 +116,50 @@ export const PhotoEditor: React.FC<PhotoEditorProps> = ({ imageSrc, fileName, on
                         crop={crop}
                         zoom={zoom}
                         rotation={rotation}
-                        aspect={1}
+                        aspect={currentRequirement.aspectRatio}
                         onCropChange={setCrop}
                         onCropComplete={onCropComplete}
                         onZoomChange={setZoom}
                         onRotationChange={setRotation}
                         showGrid={false} // We provide our own guides
-                        cropSize={{ width: 400, height: 400 }} // Fixed visual size
+                    // Removed fixed cropSize to allow aspect ratio to drive dimensions
                     />
-                    <GuideOverlay />
+                    <GuideOverlay guide={currentRequirement.guide} />
                 </div>
             </div>
 
             <div className="controls-panel glass-panel">
+
+                {/* Country Selector */}
+                <div className="control-group">
+                    <label>Visa Country</label>
+                    <select
+                        className="country-select"
+                        value={selectedCountry}
+                        onChange={(e) => {
+                            setSelectedCountry(e.target.value);
+                            setRotation(0); // Reset rotation on change might be safer, or keep it.
+                            // Resetting zoom/crop might be annoying, but aspect changes so crop needs adjustment.
+                            // react-easy-crop handles aspect change gracefully usually.
+                        }}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            background: 'rgba(255,255,255,0.1)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            color: 'white',
+                            borderRadius: '8px',
+                            fontSize: '1rem',
+                            marginBottom: '1rem'
+                        }}
+                    >
+                        {Object.values(VISA_REQUIREMENTS).map(req => (
+                            <option key={req.id} value={req.id} style={{ color: 'black' }}>
+                                {req.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
 
                 {/* Zoom Controls */}
                 <div className="control-group">

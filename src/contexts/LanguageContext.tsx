@@ -25,7 +25,7 @@ interface Translations {
 
 const translations: Record<Language, Translations> = {
     en: {
-        title: 'US Visa Photo Maker',
+        title: 'Visa Photo Maker',
         subtitle: 'Upload, Align, and Download Compliant Photos.',
         uploadTitle: 'Click or Drag to Upload',
         uploadSubtitle: 'Supports JPEG, PNG. Min 600x600 pixels.',
@@ -37,14 +37,14 @@ const translations: Record<Language, Translations> = {
         rotation: 'Rotation',
         startOver: 'Start Over',
         download: 'Download Photo',
-        downloadPrintSheet: 'Download 4x6" Printable (6 Photos)',
+        downloadPrintSheet: 'Download 4x6" Printable Sheet',
         hint: 'Double tap / Pinch to Zoom on Trackpad supported.',
         headContour: 'Fit Head Here',
-        disclaimer: 'Disclaimer: This tool is not affiliated with the U.S. Department of State. The photos generated are for reference only and do not guarantee acceptance. Please verify with official requirements before submission.',
+        disclaimer: 'Disclaimer: This tool is not affiliated with any government agency. The photos generated are for reference only and do not guarantee acceptance. Please verify with official requirements before submission.',
         privacy: 'Privacy: We do not store any uploaded photos or log user activity.',
     },
     zh: {
-        title: '美国签证照片制作',
+        title: '签证照片制作',
         subtitle: '上传、对齐、下载符合要求的照片。',
         uploadTitle: '点击或拖拽上传照片',
         uploadSubtitle: '支持 JPEG, PNG。像素不低于 600x600。',
@@ -56,10 +56,10 @@ const translations: Record<Language, Translations> = {
         rotation: '旋转 (Rotation)',
         startOver: '重新开始',
         download: '下载照片',
-        downloadPrintSheet: '下载 4x6" 排版 (6张)',
+        downloadPrintSheet: '下载 4x6" 排版',
         hint: '支持触控板双指捏合缩放。',
         headContour: '将头部对齐此处',
-        disclaimer: '免责声明：本工具与美国国务院无关。生成的照片仅供参考，不保证一定被接受。提交前请务必仔细核对官方要求。',
+        disclaimer: '免责声明：本工具与任何政府机构无关。生成的照片仅供参考，不保证一定被接受。提交前请务必仔细核对官方要求。',
         privacy: '隐私声明：本网站不存储任何用户上传的照片，也不会记录用户的任何活动。',
     },
 };

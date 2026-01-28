@@ -5,6 +5,8 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { Footer } from './components/Footer';
 
+import { FeedbackForm } from './components/FeedbackForm';
+
 function AppContent() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -50,6 +52,7 @@ function AppContent() {
         )}
       </main>
       <Footer />
+      <FeedbackForm />
     </div>
   );
 }
